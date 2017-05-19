@@ -20,12 +20,14 @@ def char_rnn(sentence,
 
     word_embeddings = tf.reshape(
         ex.bidirectional_id_vector_to_embedding(
-            tf.reshape(sentence, [-1, ex.static_shape(sentence)[2]]),
+            tf.reshape(sentence,
+                       [tf.shape(sentence)[0] * tf.shape(sentence)[1],
+                        tf.shape(sentence)[2]]),
             char_embeddings,
             output_size=word_embedding_size,
             context_vector_size=context_vector_size,
             dynamic_length=True),
-        [-1, ex.static_shape(sentence)[1], word_embedding_size])
+        [tf.shape(sentence)[0], tf.shape(sentence)[1], word_embedding_size])
 
     sentence_lengths = ex.id_tensor_to_length(sentence)
 
@@ -35,9 +37,12 @@ def char_rnn(sentence,
         sequence_length=sentence_lengths)
 
     logits = tf.reshape(
-        ex.mlp(tf.reshape(rnn_outputs, [-1, ex.static_shape(rnn_outputs)[2]]),
-               layer_sizes=[word_embedding_size, num_classes]),
-        [-1, ex.static_shape(sentence)[1], num_classes])
+        ex.mlp(
+            tf.reshape(rnn_outputs,
+                       [tf.shape(rnn_outputs)[0] * tf.shape(rnn_outputs)[1],
+                        ex.static_shape(rnn_outputs)[2]]),
+            layer_sizes=[word_embedding_size, num_classes]),
+        [tf.shape(sentence)[0], tf.shape(sentence)[1], num_classes])
 
     loss = tf.reduce_mean(
         tf.reduce_sum(

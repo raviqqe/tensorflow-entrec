@@ -1,6 +1,7 @@
 import re
-import setuptools
 import sys
+
+import setuptools
 
 
 if not sys.version_info >= (3, 5):

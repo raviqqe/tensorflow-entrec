@@ -6,7 +6,8 @@ from .char_rnn import char_rnn
 def test_char_rnn():
     for i, (sentence_shape, labels_shape) in enumerate([
             [[None, 64, 8], [None, 64]],
-            [[None, None, 8], [None, None]]]):
+            [[None, None, 8], [None, None]],
+            [[None, None, None], [None, None]]]):
         for mode in [tf.contrib.learn.ModeKeys.TRAIN,
                      tf.contrib.learn.ModeKeys.EVAL,
                      tf.contrib.learn.ModeKeys.INFER]:

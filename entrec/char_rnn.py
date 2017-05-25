@@ -59,17 +59,17 @@ def char_rnn(sentence,
             axis=1)
         / tf.to_float(sentence_length)) if labels is not None else None
 
-    predictions = tf.argmax(logits, axis=2)
-    num_words = tf.reduce_sum(sentence_length)
+    predictions = tf.to_int32(tf.argmax(logits, axis=2))
+    num_words = tf.to_float(tf.reduce_sum(sentence_length))
 
     return tf.contrib.learn.ModelFnOps(
         mode,
-        eval_metrics={
+        eval_metric_ops={
             'accuracy': tf.contrib.metrics.streaming_mean(
                 tf.reduce_sum(tf.to_float(tf.equal(labels, predictions))
                               * sentence_mask)
                 / num_words,
-                num_words),
+                num_words)[1],
         } if labels is not None else None,
         predictions=predictions,
         loss=loss,

@@ -28,7 +28,9 @@ def char_rnn(sentence,
             output_size=word_embedding_size,
             context_vector_size=context_vector_size,
             dynamic_length=True),
-        [tf.shape(sentence)[0], tf.shape(sentence)[1], word_embedding_size])
+        [tf.shape(sentence)[0],
+         tf.shape(sentence)[1],
+         2 * word_embedding_size])
 
     sentence_lengths = ex.id_tensor_to_length(sentence)
 

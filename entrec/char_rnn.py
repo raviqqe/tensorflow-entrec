@@ -71,7 +71,7 @@ def def_char_rnn():
     adder.add_flag('word_embedding_size', type=int, default=128)
     adder.add_flag('context_vector_size', type=int, default=128)
 
-    def model(sentence, labels=None, *, mode):
+    def model(sentence, labels=None, *, mode, key=None):
         return char_rnn(sentence, labels, mode=mode, **adder.flags)
 
     return model

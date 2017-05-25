@@ -13,14 +13,12 @@ def def_convert_json_example():
     An example is the following.
 
     ```json
-    {
-        "sentence": [
-            { "word": "I",   "label": 0 },
-            { "word": "am",  "label": 0 },
-            { "word": "Bob", "label": 1 },
-            { "word": ".",   "label": 0 }
-        ]
-    }
+    [
+        { "word": "I",   "label": 0 },
+        { "word": "am",  "label": 0 },
+        { "word": "Bob", "label": 1 },
+        { "word": ".",   "label": 0 }
+    ]
     ```
     """
     chars = qndex.nlp.def_chars()
@@ -29,15 +27,13 @@ def def_convert_json_example():
         char_indices = {char: index for index, char in enumerate(chars())}
 
         def convert(string):
-            example = json.loads(string.decode())
-
             words, labels = zip(*[(pair['word'], pair['label'])
-                                  for pair in example['sentence']])
+                                  for pair in json.loads(string.decode())])
             word_length = max(len(word) for word in words)
 
             return tuple(map(
                 lambda x: np.array(x, np.int32),
-                [listpad.ListPadder([word_length], qndex.nlp.NULL_INDEX)
+                [listpad.ListPadder([word_length, None], qndex.nlp.NULL_INDEX)
                  .pad([[(char_indices[char]
                          if char in char_indices else
                          qndex.nlp.UNKNOWN_INDEX)

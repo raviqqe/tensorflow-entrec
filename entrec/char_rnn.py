@@ -50,14 +50,14 @@ def char_rnn(sentence,
                                      maxlen=ex.static_shape(sentence)[1],
                                      dtype=tf.float32)
 
-    loss = labels and tf.reduce_mean(
+    loss = tf.reduce_mean(
         tf.reduce_sum(
             (tf.nn.sparse_softmax_cross_entropy_with_logits(
                 labels=labels,
                 logits=logits)
              * sentence_mask),
             axis=1)
-        / tf.to_float(sentence_length))
+        / tf.to_float(sentence_length)) if labels is not None else None
 
     predictions = tf.argmax(logits, axis=2)
     num_words = tf.reduce_sum(sentence_length)
@@ -70,10 +70,10 @@ def char_rnn(sentence,
                               * sentence_mask)
                 / num_words,
                 num_words),
-        },
+        } if labels is not None else None,
         predictions=predictions,
         loss=loss,
-        train_op=labels and ex.minimize(loss))
+        train_op=ex.minimize(loss) if labels is not None else None)
 
 
 def def_char_rnn():

@@ -62,12 +62,12 @@ def def_convert_json_example():
     return convert_json_example
 
 
-def def_read_file():
+def def_read_json_file():
     convert_json_example = def_convert_json_example()
 
-    def read_file(filename_queue):
+    def read_json_file(filename_queue):
         key, value = tf.WholeFileReader().read(filename_queue)
         sentence, labels = convert_json_example(value)
         return {'key': key, 'sentence': sentence}, {'labels': labels}
 
-    return read_file
+    return read_json_file

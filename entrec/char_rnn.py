@@ -1,4 +1,5 @@
 import extenteten as ex
+import qnd
 import tensorflow as tf
 
 
@@ -60,3 +61,17 @@ def char_rnn(sentence,
         predictions=tf.argmax(logits, axis=2),
         loss=loss,
         train_op=ex.minimize(loss))
+
+
+def def_char_rnn():
+    adder = qnd.FlagAdder()
+    adder.add_required_flag('num_classes', type=int)
+    adder.add_required_flag('char_space_size', type=int)
+    adder.add_flag('char_embedding_size', type=int, default=64)
+    adder.add_flag('word_embedding_size', type=int, default=128)
+    adder.add_flag('context_vector_size', type=int, default=128)
+
+    def model(sentence, labels=None, *, mode):
+        return char_rnn(sentence, labels, mode=mode, **adder.flags)
+
+    return model

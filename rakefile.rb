@@ -4,4 +4,8 @@ include TFRake
 
 define_tasks('entrec')
 
-task test: :pytest
+task_in_venv :examples do
+  vsh 'cd examples/char_rnn && rake'
+end
+
+task test: %i[pytest examples]

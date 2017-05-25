@@ -5,6 +5,7 @@ from .char_rnn import char_rnn
 
 def test_char_rnn():
     for i, (sentence_shape, labels_shape) in enumerate([
+            [[11, 64, 8], [11, 64]],
             [[None, 64, 8], [None, 64]],
             [[None, None, 8], [None, None]],
             [[None, None, None], [None, None]]]):

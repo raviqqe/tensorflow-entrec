@@ -40,11 +40,10 @@ def char_rnn(sentence,
         sequence_length=sentence_lengths)
 
     logits = tf.reshape(
-        ex.mlp(
-            tf.reshape(rnn_outputs,
-                       [tf.shape(rnn_outputs)[0] * tf.shape(rnn_outputs)[1],
-                        ex.static_shape(rnn_outputs)[2]]),
-            layer_sizes=[word_embedding_size, num_classes]),
+        ex.mlp(tf.reshape(rnn_outputs,
+                          [tf.shape(rnn_outputs)[0] * tf.shape(rnn_outputs)[1],
+                           ex.static_shape(rnn_outputs)[2]]),
+               layer_sizes=[word_embedding_size, num_classes]),
         [tf.shape(sentence)[0], tf.shape(sentence)[1], num_classes])
 
     loss = tf.reduce_mean(

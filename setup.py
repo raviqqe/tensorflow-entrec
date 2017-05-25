@@ -19,7 +19,11 @@ setuptools.setup(
     author_email="raviqqe@gmail.com",
     url="https://github.com/raviqqe/tensorflow-entrec/",
     packages=["entrec"],
-    install_requires=["tensorflow-qnd", "tensorflow-extenteten"],
+    install_requires=[
+        "tensorflow-qnd",
+        "tensorflow-extenteten",
+        "tensorflow-qndex"
+    ],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",

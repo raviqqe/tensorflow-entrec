@@ -32,12 +32,12 @@ def char_rnn(sentence,
          tf.shape(sentence)[1],
          2 * word_embedding_size])
 
-    sentence_lengths = ex.id_tensor_to_length(sentence)
+    sentence_length = ex.id_tensor_to_length(sentence)
 
     rnn_outputs = ex.bidirectional_rnn(
         word_embeddings,
         output_size=word_embedding_size,
-        sequence_length=sentence_lengths)
+        sequence_length=sentence_length)
 
     logits = tf.reshape(
         ex.mlp(tf.reshape(rnn_outputs,
@@ -46,20 +46,32 @@ def char_rnn(sentence,
                layer_sizes=[word_embedding_size, num_classes]),
         [tf.shape(sentence)[0], tf.shape(sentence)[1], num_classes])
 
+    sentence_mask = tf.sequence_mask(sentence_length,
+                                     maxlen=ex.static_shape(sentence)[1],
+                                     dtype=tf.float32)
+
     loss = labels and tf.reduce_mean(
         tf.reduce_sum(
             (tf.nn.sparse_softmax_cross_entropy_with_logits(
                 labels=labels,
                 logits=logits)
-             * tf.sequence_mask(sentence_lengths,
-                                maxlen=ex.static_shape(sentence)[1],
-                                dtype=tf.float32)),
+             * sentence_mask),
             axis=1)
-        / tf.to_float(sentence_lengths))
+        / tf.to_float(sentence_length))
+
+    predictions = tf.argmax(logits, axis=2)
+    num_words = tf.reduce_sum(sentence_length)
 
     return tf.contrib.learn.ModelFnOps(
         mode,
-        predictions=tf.argmax(logits, axis=2),
+        eval_metrics={
+            'accuracy': tf.contrib.metrics.streaming_mean(
+                tf.reduce_sum(tf.to_float(tf.equal(labels, predictions))
+                              * sentence_mask)
+                / num_words,
+                num_words),
+        },
+        predictions=predictions,
         loss=loss,
         train_op=labels and ex.minimize(loss))
 

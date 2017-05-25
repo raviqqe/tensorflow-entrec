@@ -5,7 +5,7 @@ import tensorflow as tf
 
 @ex.func_scope()
 def char_rnn(sentence,
-             labels,
+             labels=None,
              *,
              mode,
              num_classes,
@@ -14,7 +14,7 @@ def char_rnn(sentence,
              word_embedding_size,
              context_vector_size):
     assert ex.static_rank(sentence) == 3
-    assert ex.static_rank(labels) == 2
+    assert ex.static_rank(labels) == 2 if labels is not None else True
 
     char_embeddings = ex.embeddings(id_space_size=char_space_size,
                                     embedding_size=char_embedding_size)
@@ -46,7 +46,7 @@ def char_rnn(sentence,
                layer_sizes=[word_embedding_size, num_classes]),
         [tf.shape(sentence)[0], tf.shape(sentence)[1], num_classes])
 
-    loss = tf.reduce_mean(
+    loss = labels and tf.reduce_mean(
         tf.reduce_sum(
             (tf.nn.sparse_softmax_cross_entropy_with_logits(
                 labels=labels,
@@ -61,7 +61,7 @@ def char_rnn(sentence,
         mode,
         predictions=tf.argmax(logits, axis=2),
         loss=loss,
-        train_op=ex.minimize(loss))
+        train_op=labels and ex.minimize(loss))
 
 
 def def_char_rnn():
